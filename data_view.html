@@ -1,0 +1,163 @@
+﻿<!DOCTYPE HTML>  
+<html>  
+  
+<head> 
+    <title> 
+        Get table from db
+    </title>
+      
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
+</head> 
+  
+<body style = "text-align:center;">  
+      
+    <h1 style = "color:green;">  
+        jk db front web  
+    </h1>
+      
+    <p id = "GFG_UP" style =
+            "font-size: 15px; font-weight: bold;">
+    </p>
+
+    
+<div>
+        Schema
+        <select id="schema" name="schema_dropdown">
+            <option value="1" selected="selected">pubchem</option> 
+        </select>&nbsp;&nbsp;&nbsp;&nbsp; Table <select id="table_name" name="D1">
+            <option value="1" selected="selected">cid_cas</option>
+        </select><br />
+        Column List
+        <input id="select_list" type="text" value="cid, cas" /><br />
+        Filter List
+        <select id="filter_list_1" name="D2">
+            <option value="1" selected="selected">cid</option>
+            <option value="2">cas</option>
+        </select>
+        <select id="filter_list_1_operator" name="D3">
+            <option value="1" selected="selected">=</option>
+            <option value="2">like</option>
+            <option value="3">in</option>
+        </select>
+        <input id="filter_list_1_condition" type="text" value="2" /><br />
+        Limit record number
+        <input id="limit_num" type="text" value="10" /><br />
+        Offset # records returned
+        <input id="offset_num" type="text" value="0" /></div>
+    <p></p>
+    <button onclick="get_api()">get table data</button>
+
+    <button onclick = "GFG_FUN()">
+        convert to table
+    </button>
+    <div id = "output" style = "background-color:#39B54A;"></div> 
+    <br><br>
+      
+    <table id="table" align = "center" border="1px"></table>
+      
+    <script type = "text/javascript" language="javascript"> 
+        var api_key = '123'
+        var list;
+        var el_up = document.getElementById("GFG_UP");
+          
+        //list =[{"cid": 2, "cas": "5080-50-2"}, {"cid": 2, "cas": "89946-58-7"}];
+        var api_str = 'http://127.0.0.1:8080/GetResult?api_key=' + api_key + '&schema='
+            + $('#schema :selected').text()
+            + '&table_name=' + $('#table_name :selected').text()
+            + '&select_list=' + $('#select_list').val()
+            + '&filter_dict={"' + $('#filter_list_1 :selected').text()
+            + '": ["' + $('#filter_list_1_operator :selected').text()
+            + '","' + $('#filter_list_1_condition').val()
+            + '"]}&limit_n=' + $('#limit_num').val() + '&offset_n=' + $('#offset_num').val()
+        el_up.innerHTML = api_str
+        function get_api() {
+            
+            var api_str = 'http://127.0.0.1:8080/GetResult?api_key=' + api_key + '&schema='
+                + $('#schema :selected').text()
+                + '&table_name=' + $('#table_name :selected').text()
+                + '&select_list=' + $('#select_list').val()
+                + '&filter_dict={"' + $('#filter_list_1 :selected').text()
+                + '": ["' + $('#filter_list_1_operator :selected').text()
+                + '","' + $('#filter_list_1_condition').val()
+                + '"]}&limit_n=' + $('#limit_num').val() + '&offset_n=' + $('#offset_num').val()
+            el_up.innerHTML = api_str
+            $.getJSON(api_str, function(data) { 
+					$('#output').html('<p> StatusCode: ' + data.StatusCode + '</p>'); 
+					$('#output').append('<p> Rec_Num: ' + data.Rec_Num + '</p>'); 
+                    $('#output').append('<p> Result_Num: ' + data.Result_num + '</p>');
+                    $('#output').append('<p> error: ' + data.error + '</p>');
+                    list = data.Items
+                   // $('#output').append('<p> Items: ' + data.Items + '</p>');
+                item_str = "Click on the button to create the "
+                    + "table from the JSON data.<br><br>"
+                    for (var i = 0; i < list.length; i++) {
+                        item_str = item_str
+                        + JSON.stringify(list[i]) + "<br>"
+                }
+                //item_str = item_str + JSON.stringify(list[i+1])
+                    $('#output').append(item_str);
+            });
+
+        } 
+
+        //el_up.innerHTML = "Click on the button to create the "
+        //        + "table from the JSON data.<br><br>" 
+        //        + JSON.stringify(list[0]) + "<br>" 
+        //        + JSON.stringify(list[1]) + "<br>" 
+        //        + JSON.stringify(list[2]);   
+
+        
+        function GFG_FUN() {
+            var cols = [];
+              
+            for (var i = 0; i < list.length; i++) {
+                for (var k in list[i]) {
+                    if (cols.indexOf(k) === -1) {
+                          
+                        // Push all keys to the array
+                        cols.push(k);
+                    }
+                }
+            }
+              
+            // Create a table element
+            var table = document.createElement("table");
+              
+            // Create table row tr element of a table
+            var tr = table.insertRow(-1);
+              
+            for (var i = 0; i < cols.length; i++) {
+                  
+                // Create the table header th element
+                var theader = document.createElement("th");
+                theader.innerHTML = cols[i];
+                  
+                // Append columnName to the table row
+                tr.appendChild(theader);
+            }
+              
+            // Adding the data to the table
+            for (var i = 0; i < list.length; i++) {
+                  
+                // Create a new row
+                trow = table.insertRow(-1);
+                for (var j = 0; j < cols.length; j++) {
+                    var cell = trow.insertCell(-1);
+                      
+                    // Inserting the cell at particular place
+                    cell.innerHTML = list[i][cols[j]];
+                }
+            }
+              
+            // Add the newely created table containing json data
+            var el = document.getElementById("table");
+            el.innerHTML = "";
+            el.appendChild(table);
+        }    
+    </script> 
+</body>  
+  
+</html>
+
