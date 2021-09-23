@@ -9,6 +9,8 @@
     <script src=
 "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
     </script>
+
+
 </head> 
   
 <body style = "text-align:center;">  
@@ -48,7 +50,7 @@
         <input id="offset_num" type="text" value="0" /></div>
     <p></p>
     <button onclick="get_api()">get table data</button>
-
+    <!-- <button onclick="get_config()">get server data</button> -->
     <button onclick = "GFG_FUN()">
         convert to table
     </button>
@@ -61,21 +63,71 @@
         var api_key = '123'
         var list;
         var el_up = document.getElementById("GFG_UP");
-          
+        var db_api_server_addr;
+        var db_api_server_port;
+        //$.ajax({
+        //    dataType: "json",
+        //    url: "config/config.json",
+        //    async: false,
+        //    success: function (config_data) {
+        //        $('#output').html('<p> StatusCode: ' + config_data.flask_api.server + '</p>');
+
+        //        $('#output').append('<p> Result_Num: ' + config_data.flask_api.port + '</p>');
+        //        $('#output').append('<p> error: ' + config_data.error + '</p>');
+        //        db_api_server_addr = config_data.flask_api.server;
+        //        db_api_server_port = config_data.flask_api.port;
+        //    }
+
+        //});
+
+        $.get_config = function () {
+            return $.ajax({
+            dataType: "json",
+            url: "config/config.json"
+        });
+        }
+        $.get_config().then(function (config_data) {
+            //$('#output').html('<p> StatusCode: ' + config_data.flask_api.server + '</p>');
+
+            //$('#output').append('<p> Result_Num: ' + config_data.flask_api.port + '</p>');
+            //$('#output').append('<p> error: ' + config_data.error + '</p>');
+            db_api_server_addr = config_data.flask_api.server;
+            db_api_server_port = config_data.flask_api.port;
+            var api_str = 'http://' + db_api_server_addr + ':' + db_api_server_port
+                + '/GetResult?api_key=' + api_key
+                + '&schema=' + $('#schema :selected').text()
+                + '&table_name=' + $('#table_name :selected').text()
+                + '&select_list=' + $('#select_list').val()
+                + '&filter_dict={"' + $('#filter_list_1 :selected').text()
+                + '": ["' + $('#filter_list_1_operator :selected').text()
+                + '","' + $('#filter_list_1_condition').val()
+                + '"]}&limit_n=' + $('#limit_num').val() + '&offset_n=' + $('#offset_num').val()
+            el_up.innerHTML = api_str
+        }
+            )
+     
+ 
         //list =[{"cid": 2, "cas": "5080-50-2"}, {"cid": 2, "cas": "89946-58-7"}];
-        var api_str = 'http://127.0.0.1:8080/GetResult?api_key=' + api_key + '&schema='
-            + $('#schema :selected').text()
-            + '&table_name=' + $('#table_name :selected').text()
-            + '&select_list=' + $('#select_list').val()
-            + '&filter_dict={"' + $('#filter_list_1 :selected').text()
-            + '": ["' + $('#filter_list_1_operator :selected').text()
-            + '","' + $('#filter_list_1_condition').val()
-            + '"]}&limit_n=' + $('#limit_num').val() + '&offset_n=' + $('#offset_num').val()
-        el_up.innerHTML = api_str
+        //var api_str = 'http://' + db_api_server_addr + ':' + db_api_server_port
+        //    + '/GetResult?api_key=' + api_key
+        //    + '&schema=' + $('#schema :selected').text()
+        //    + '&table_name=' + $('#table_name :selected').text()
+        //    + '&select_list=' + $('#select_list').val()
+        //    + '&filter_dict={"' + $('#filter_list_1 :selected').text()
+        //    + '": ["' + $('#filter_list_1_operator :selected').text()
+        //    + '","' + $('#filter_list_1_condition').val()
+        //    + '"]}&limit_n=' + $('#limit_num').val() + '&offset_n=' + $('#offset_num').val()
+        //el_up.innerHTML = api_str
+        //el_up.innerHTML = $.get("config/config.xml", function (data) {
+        //    alert($(data).find('widget').attr('version')).printObject();
+        // });
+
+
         function get_api() {
             
-            var api_str = 'http://127.0.0.1:8080/GetResult?api_key=' + api_key + '&schema='
-                + $('#schema :selected').text()
+            var api_str = 'http://' + db_api_server_addr + ':' + db_api_server_port
+                + '/GetResult?api_key=' + api_key
+                + '&schema=' + $('#schema :selected').text()
                 + '&table_name=' + $('#table_name :selected').text()
                 + '&select_list=' + $('#select_list').val()
                 + '&filter_dict={"' + $('#filter_list_1 :selected').text()

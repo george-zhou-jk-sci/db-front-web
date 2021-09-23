@@ -1,0 +1,7 @@
+{
+  "flask_api": {
+    "server": "localhost",
+    "port" : "8080"
+  },
+  "error": "none"
+}
